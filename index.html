@@ -3,305 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>⚡ REAL BLE SCOOTER TUNER ⚡</title>
+    <title>🔍 UNIVERSAL BLE READER | iScooter iX3 Recon</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background: #0b0e1a;
+            background: #0a0c12;
             font-family: 'Courier New', 'Monaco', monospace;
             padding: 20px;
             color: #0f0;
         }
         .container {
-            max-width: 700px;
+            max-width: 950px;
             margin: 0 auto;
-            background: #11151f;
+            background: #11161f;
             border-radius: 32px;
             padding: 24px;
-            border: 1px solid #0f0;
-            box-shadow: 0 0 20px rgba(0,255,0,0.2);
+            border: 2px solid #0f0;
+            box-shadow: 0 0 25px #0f0a;
         }
-        h1 {
-            color: #0f0;
-            text-align: center;
-            font-size: 1.6rem;
-            margin-bottom: 8px;
-        }
+        h1 { text-align: center; font-size: 1.6rem; margin-bottom: 5px; }
+        .sub { text-align: center; font-size: 0.7rem; color: #8f8; margin-bottom: 20px; }
         .status {
-            background: #000;
+            background: #000000aa;
             padding: 12px;
             border-radius: 20px;
             font-size: 0.8rem;
             margin: 15px 0;
-            word-break: break-all;
             border-left: 5px solid #0f0;
+            word-break: break-all;
         }
         button {
             background: #1e2a2a;
             border: 1px solid #0f0;
             color: #0f0;
-            padding: 12px 20px;
+            padding: 10px 16px;
             font-weight: bold;
             font-family: monospace;
-            font-size: 1rem;
-            margin: 8px 5px;
+            font-size: 0.9rem;
+            margin: 5px;
             border-radius: 40px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.1s;
         }
-        button:active {
-            background: #0f0;
-            color: #000;
-            transform: scale(0.96);
+        button:active { background: #0f0; color: #000; transform: scale(0.96); }
+        .log {
+            background: #000000aa;
+            padding: 12px;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: monospace;
+            margin: 15px 0;
+            border: 1px solid #0f0;
         }
         .param {
             background: #0a0e16;
             padding: 12px;
             margin: 15px 0;
-            border-radius: 24px;
+            border-radius: 20px;
         }
-        label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        input[type="range"] {
-            width: 100%;
-            background: #222;
-            height: 4px;
-        }
-        input[type="range"]::-webkit-slider-thumb {
+        input[type="range"] { width: 100%; background: #2a3a3a; height: 4px; }
+        .warning { color: #fa0; font-size: 0.65rem; text-align: center; margin-top: 15px; }
+        hr { border-color: #0f0; margin: 12px 0; }
+        .flex { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .badge {
             background: #0f0;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-        }
-        .hex-box {
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 20px;
             font-size: 0.7rem;
-            background: #000;
-            padding: 8px;
-            border-radius: 16px;
-            margin-top: 10px;
-            font-family: monospace;
-        }
-        .warning {
-            color: #fa0;
-            font-size: 0.7rem;
-            margin-top: 20px;
-            text-align: center;
-        }
-        hr {
-            border-color: #0f0;
-            margin: 15px 0;
+            display: inline-block;
+            margin-right: 8px;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>⚡ REAL BLE SCOOTER TUNER ⚡</h1>
-    <div style="text-align:center; margin-bottom:12px;">🔧 for Xiaomi / Ninebot / Kugoo</div>
+    <h1>🔍 UNIVERSAL BLE READER</h1>
+    <div class="sub">accepts ANY BLE device — find your iScooter iX3 manually</div>
 
-    <div class="status" id="bleStatus">
-        ⚠️ NOT CONNECTED — Click "CONNECT TO SCOOTER"
-    </div>
+    <div class="status" id="bleStatus">⚡ Ready — click "SCAN ALL DEVICES"</div>
 
-    <button id="connectBtn">🔗 CONNECT TO SCOOTER (BLE)</button>
-    <button id="disconnectBtn" disabled>❌ DISCONNECT</button>
-
-    <hr>
-
-    <div class="param">
-        <label>🚀 SPEED LIMIT OFFSET <span id="speedLimitVal">100%</span></label>
-        <input type="range" id="speedSlider" min="0" max="150" value="100">
-        <div class="hex-box" id="speedHex">CMD: </div>
+    <div class="flex">
+        <button id="scanBtn">📡 SCAN ALL BLE DEVICES</button>
+        <button id="disconnectBtn" disabled>🔌 DISCONNECT</button>
+        <button id="readAllBtn" disabled>📖 READ EVERY CHARACTERISTIC</button>
+        <button id="exportBtn" disabled>💾 EXPORT FULL LOG</button>
     </div>
 
     <div class="param">
-        <label>🌀 CURRENT (TORQUE) BOOST <span id="currentVal">100%</span></label>
-        <input type="range" id="currentSlider" min="50" max="150" value="100">
-        <div class="hex-box" id="currentHex">CMD: </div>
+        <div><span class="badge">🛴 CONNECTED DEVICE INFO</span></div>
+        <div class="log" id="deviceInfoLog">— not connected —</div>
     </div>
 
     <div class="param">
-        <label>⚡ FIELD WEAKENING <span id="fwVal">0%</span></label>
-        <input type="range" id="fwSlider" min="0" max="100" value="0">
-        <div class="hex-box" id="fwHex">CMD: </div>
+        <div><span class="badge">📋 ALL SERVICES & CHARACTERISTICS (with values)</span></div>
+        <div class="log" id="servicesLog">— will populate after connection & read —</div>
     </div>
 
-    <button id="sendTuneBtn">🔥 SEND TUNE TO SCOOTER 🔥</button>
-    <button id="readParamsBtn">📡 READ CURRENT PARAMS</button>
+    <div class="param">
+        <div><span class="badge">📝 RAW LIVE NOTIFICATIONS (if any)</span></div>
+        <div class="log" id="trafficLog">— enable capture below —</div>
+        <button id="captureNotifyBtn" disabled>🎣 START CAPTURING NOTIFICATIONS</button>
+    </div>
+
+    <div class="param">
+        <div><span class="badge">⚡ MANUAL COMMAND INJECTOR</span></div>
+        <input type="text" id="hexInput" placeholder="AA 55 0B 00 04 64 00 00..." style="width:100%; background:#000; color:#0f0; border:1px solid #0f0; padding:8px; border-radius:20px; font-family:monospace;">
+        <button id="sendHexBtn" disabled>💉 SEND RAW HEX</button>
+        <label style="margin-top:10px; display:block;">🚀 BRUTE SPEED SLIDER: <span id="sliderVal">100%</span></label>
+        <input type="range" id="bruteSlider" min="0" max="200" value="100">
+        <button id="bruteBtn" disabled>⚡ BRUTEFORCE COMMON SPEED PATTERNS</button>
+    </div>
 
     <div class="warning">
-        ⚠️ REAL DEVICE MODE — This writes to BLE characteristics. <br>
-        Only use if you understand risks. Some controllers lock above factory limits.
-        Always test off public roads.
+        ⚠️ MODE: NO FILTERS — scans EVERY BLE device. Pick your iScooter iX3 from the popup.<br>
+        Then click "READ EVERY CHARACTERISTIC" to dump ALL data. That's how we find speed registers.
     </div>
 </div>
 
 <script>
-    // ---------- REAL WEB BLE CODE ----------
+    // ---------- GLOBALS ----------
     let device = null;
-    let characteristic = null;
-    let serviceUUID = "0000ffe0-0000-1000-8000-00805f9b34fb"; // typical for Xiaomi/Ninebot
-    let charUUID = "0000ffe1-0000-1000-8000-00805f9b34fb";   // write characteristic
+    let server = null;
+    let allCharacteristics = []; // store {serviceUUID, charUUID, charObj, properties}
+    let notifyActive = false;
+    let notifyListeners = [];
 
     // DOM elements
-    const bleStatusDiv = document.getElementById('bleStatus');
-    const connectBtn = document.getElementById('connectBtn');
+    const bleStatus = document.getElementById('bleStatus');
+    const scanBtn = document.getElementById('scanBtn');
     const disconnectBtn = document.getElementById('disconnectBtn');
-    const speedSlider = document.getElementById('speedSlider');
-    const currentSlider = document.getElementById('currentSlider');
-    const fwSlider = document.getElementById('fwSlider');
-    const speedLimitVal = document.getElementById('speedLimitVal');
-    const currentVal = document.getElementById('currentVal');
-    const fwVal = document.getElementById('fwVal');
-    const sendTuneBtn = document.getElementById('sendTuneBtn');
-    const readParamsBtn = document.getElementById('readParamsBtn');
+    const readAllBtn = document.getElementById('readAllBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const captureNotifyBtn = document.getElementById('captureNotifyBtn');
+    const sendHexBtn = document.getElementById('sendHexBtn');
+    const bruteBtn = document.getElementById('bruteBtn');
+    const deviceInfoLog = document.getElementById('deviceInfoLog');
+    const servicesLog = document.getElementById('servicesLog');
+    const trafficLog = document.getElementById('trafficLog');
+    const hexInput = document.getElementById('hexInput');
+    const bruteSlider = document.getElementById('bruteSlider');
+    const sliderVal = document.getElementById('sliderVal');
 
-    // Helper: update displayed values
-    function updateLabels() {
-        speedLimitVal.innerText = speedSlider.value + "%";
-        currentVal.innerText = currentSlider.value + "%";
-        fwVal.innerText = fwSlider.value + "%";
-
-        // Build hex commands for display
-        let speedByte = Math.floor((parseInt(speedSlider.value) / 150) * 255);
-        let currentByte = Math.floor((parseInt(currentSlider.value) / 150) * 255);
-        let fwByte = Math.floor((parseInt(fwSlider.value) / 100) * 255);
-
-        document.getElementById('speedHex').innerHTML = `CMD: A5 5A 10 01 ${speedByte.toString(16).padStart(2,'0')} 00 00 00 00 00 00 00 00 00 00 00 00 00 00`;
-        document.getElementById('currentHex').innerHTML = `CMD: A5 5A 10 02 ${currentByte.toString(16).padStart(2,'0')} 00 00 00 00 00 00 00 00 00 00 00 00 00 00`;
-        document.getElementById('fwHex').innerHTML = `CMD: A5 5A 10 03 ${fwByte.toString(16).padStart(2,'0')} 00 00 00 00 00 00 00 00 00 00 00 00 00 00`;
+    function addTraffic(msg, isTx = true) {
+        const prefix = isTx ? "📤 TX → " : "📥 RX ← ";
+        trafficLog.innerHTML = prefix + msg + "\n" + trafficLog.innerHTML;
+        if (trafficLog.innerHTML.split('\n').length > 100) {
+            trafficLog.innerHTML = trafficLog.innerHTML.split('\n').slice(0, 80).join('\n');
+        }
     }
 
-    // Real BLE write function
-    async function sendRealCommand(commandArray) {
-        if (!characteristic) {
-            bleStatusDiv.innerHTML = "❌ No BLE characteristic. Connect first.";
-            return false;
-        }
+    async function readCharValue(charObj, serviceUUID, charUUID) {
+        if (!charObj.properties.read) return "🔒 NOT READABLE";
         try {
-            const data = new Uint8Array(commandArray);
-            await characteristic.writeValue(data);
-            bleStatusDiv.innerHTML = `✅ CMD SENT: [${Array.from(data).map(b => '0x'+b.toString(16).padStart(2,'0')).join(', ')}]`;
-            return true;
+            const value = await charObj.readValue();
+            const bytes = new Uint8Array(value.buffer);
+            const hex = Array.from(bytes).map(b => '0x' + b.toString(16).padStart(2, '0')).join(' ');
+            let ascii = Array.from(bytes).map(b => (b >= 32 && b < 127) ? String.fromCharCode(b) : '.').join('');
+            if (ascii.trim() === "") ascii = "(binary)";
+            return `${hex}  |  ASCII: "${ascii}"`;
         } catch(e) {
-            bleStatusDiv.innerHTML = `❌ WRITE FAILED: ${e.message}`;
-            return false;
+            return `❌ READ ERROR: ${e.message}`;
         }
     }
 
-    // Build current tune command (combined)
-    function buildSpeedCommand() {
-        let speedPercent = parseInt(speedSlider.value);
-        let speedRaw = Math.floor((speedPercent / 150) * 255);
-        // Standard Xiaomi speed limit command format (varies per firmware)
-        // This is a PROVEN pattern for M365/G30 speed limit register write
-        return [0xA5, 0x5A, 0x10, 0x01, speedRaw, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+    async function enumerateAllCharacteristics(service, serviceUUID) {
+        const chars = await service.getCharacteristics();
+        for (const char of chars) {
+            const charUUID = char.uuid;
+            const props = [];
+            if (char.properties.read) props.push("read");
+            if (char.properties.write) props.push("write");
+            if (char.properties.notify) props.push("notify");
+            if (char.properties.indicate) props.push("indicate");
+            
+            let valueStr = "";
+            if (props.includes("read")) {
+                valueStr = await readCharValue(char, serviceUUID, charUUID);
+            }
+            
+            servicesLog.innerHTML += `\n📌 [${serviceUUID}] → ${charUUID} (${props.join(', ')})\n   📄 ${valueStr}\n`;
+            
+            allCharacteristics.push({ serviceUUID, charUUID, charObj: char, properties: props });
+            
+            // Auto-subscribe to notifications if capture mode active
+            if (notifyActive && props.includes("notify")) {
+                try {
+                    await char.startNotifications();
+                    const handler = (event) => {
+                        const data = new Uint8Array(event.target.value.buffer);
+                        const hexStr = Array.from(data).map(b => '0x'+b.toString(16)).join(' ');
+                        addTraffic(`NOTIFY from ${charUUID}: ${hexStr}`, false);
+                    };
+                    char.addEventListener('characteristicvaluechanged', handler);
+                    notifyListeners.push({ char, handler });
+                    addTraffic(`🔔 Subscribed to ${charUUID}`, true);
+                } catch(e) {
+                    addTraffic(`Failed notify on ${charUUID}: ${e.message}`, true);
+                }
+            }
+        }
     }
 
-    function buildCurrentCommand() {
-        let currPercent = parseInt(currentSlider.value);
-        let currRaw = Math.floor((currPercent / 150) * 255);
-        return [0xA5, 0x5A, 0x10, 0x02, currRaw, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+    async function readEverything() {
+        if (!server) { bleStatus.innerHTML = "❌ No active connection"; return; }
+        servicesLog.innerHTML = "🔍 Reading ALL services and characteristics...\n";
+        allCharacteristics = [];
+        try {
+            const primaryServices = await server.getPrimaryServices();
+            for (const service of primaryServices) {
+                const svcUUID = service.uuid;
+                servicesLog.innerHTML += `\n🟢 SERVICE: ${svcUUID}\n`;
+                await enumerateAllCharacteristics(service, svcUUID);
+            }
+            bleStatus.innerHTML = `✅ Done! Read ${allCharacteristics.length} characteristics total.`;
+        } catch(e) {
+            servicesLog.innerHTML += `\n❌ ERROR: ${e.message}`;
+            bleStatus.innerHTML = `Read error: ${e.message}`;
+        }
     }
 
-    function buildFWCommand() {
-        let fwPercent = parseInt(fwSlider.value);
-        let fwRaw = Math.floor((fwPercent / 100) * 255);
-        return [0xA5, 0x5A, 0x10, 0x03, fwRaw, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
-    }
-
-    async function sendFullTune() {
-        if (!characteristic) {
-            bleStatusDiv.innerHTML = "⚠️ Connect to a scooter first.";
+    async function sendRawHex() {
+        let hexStr = hexInput.value.trim();
+        if (!hexStr) { addTraffic("No hex entered", true); return; }
+        let bytes = hexStr.split(/[\s,]+/).map(b => parseInt(b, 16));
+        if (bytes.some(isNaN)) { addTraffic("Invalid hex format", true); return; }
+        
+        // find first writable characteristic
+        let writeChar = allCharacteristics.find(c => c.properties.includes("write"));
+        if (!writeChar) {
+            addTraffic("No writable characteristic found on this device", true);
             return;
         }
-        bleStatusDiv.innerHTML = "📡 Sending speed limit...";
-        await sendRealCommand(buildSpeedCommand());
-        await new Promise(r => setTimeout(r, 80));
-        bleStatusDiv.innerHTML = "📡 Sending current boost...";
-        await sendRealCommand(buildCurrentCommand());
-        await new Promise(r => setTimeout(r, 80));
-        bleStatusDiv.innerHTML = "📡 Sending field weakening...";
-        await sendRealCommand(buildFWCommand());
-        bleStatusDiv.innerHTML = "✅ FULL TUNE APPLIED! Ride responsive?";
-    }
-
-    async function readParams() {
-        if (!characteristic) return;
-        bleStatusDiv.innerHTML = "🔍 Reading params (some controllers reply on notify)";
         try {
-            await characteristic.readValue(); // may fail if not readable
-            bleStatusDiv.innerHTML = "📖 Read attempted — check scooter response lights.";
+            await writeChar.charObj.writeValue(new Uint8Array(bytes));
+            addTraffic(`CUSTOM HEX → ${writeChar.charUUID}: ${hexStr}`, true);
         } catch(e) {
-            bleStatusDiv.innerHTML = `Read failed: ${e.message} (not supported by this scooter)`;
+            addTraffic(`Write failed: ${e.message}`, true);
         }
     }
 
-    // BLE connection logic
-    connectBtn.onclick = async () => {
+    async function bruteforceSpeedPatterns() {
+        let percent = parseInt(bruteSlider.value);
+        let rawVal = Math.min(255, Math.floor((percent / 200) * 255));
+        const patterns = [
+            { name: "iX3 AA55 pattern", bytes: [0xAA, 0x55, 0x0B, 0x00, 0x04, rawVal, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00] },
+            { name: "Xiaomi A55A", bytes: [0xA5, 0x5A, 0x10, 0x01, rawVal, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00] },
+            { name: "Short vendor", bytes: [0x5A, 0xA5, 0x04, rawVal, 0x00] },
+            { name: "Nordic UART speed", bytes: [0x01, 0x03, rawVal, 0x00] },
+            { name: "Ninebolt style", bytes: [0x55, 0xAA, 0x03, rawVal, 0x00, 0x00] }
+        ];
+        
+        let writeChar = allCharacteristics.find(c => c.properties.includes("write"));
+        if (!writeChar) { addTraffic("No writable char for bruteforce", true); return; }
+        
+        for (let p of patterns) {
+            try {
+                await writeChar.charObj.writeValue(new Uint8Array(p.bytes));
+                addTraffic(`BRUTE: ${p.name} → ${p.bytes.map(b=>'0x'+b.toString(16)).join(' ')}`, true);
+                await new Promise(r => setTimeout(r, 120));
+            } catch(e) {
+                addTraffic(`Bruteforce fail ${p.name}: ${e.message}`, true);
+            }
+        }
+        addTraffic(`✅ Bruteforce complete for ${percent}% speed target`, true);
+    }
+
+    async function startNotifyCapture() {
+        if (!server) { bleStatus.innerHTML = "Connect first"; return; }
+        notifyActive = !notifyActive;
+        if (notifyActive) {
+            captureNotifyBtn.innerHTML = "⏹️ STOP NOTIFY CAPTURE";
+            bleStatus.innerHTML = "🎣 Notification capture ON — rescan characteristics to subscribe";
+            // re-run read to subscribe
+            await readEverything();
+        } else {
+            captureNotifyBtn.innerHTML = "🎣 START CAPTURING NOTIFICATIONS";
+            bleStatus.innerHTML = "Notify capture OFF";
+            // remove listeners
+            for (let item of notifyListeners) {
+                try {
+                    await item.char.stopNotifications();
+                    item.char.removeEventListener('characteristicvaluechanged', item.handler);
+                } catch(e) {}
+            }
+            notifyListeners = [];
+        }
+    }
+
+    function exportLog() {
+        const logContent = `=== DEVICE INFO ===\n${deviceInfoLog.innerText}\n\n=== SERVICES & VALUES ===\n${servicesLog.innerText}\n\n=== LIVE TRAFFIC ===\n${trafficLog.innerText}`;
+        const blob = new Blob([logContent], {type: "text/plain"});
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `ble_dump_${Date.now()}.txt`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        bleStatus.innerHTML = "📁 Log exported";
+    }
+
+    // BLE connection with NO filters — accept any device
+    scanBtn.onclick = async () => {
+        if (!navigator.bluetooth) {
+            bleStatus.innerHTML = "❌ Web BLE not supported. Use Chrome/Edge on Android or desktop.";
+            return;
+        }
         try {
-            bleStatusDiv.innerHTML = "🔍 Scanning for e-scooter (BLE)...";
+            bleStatus.innerHTML = "🔍 Scanning for ANY BLE device (no filters)...";
+            // THIS is the key: acceptAllDevices: true
             device = await navigator.bluetooth.requestDevice({
-                filters: [{ services: [serviceUUID] }],
-                optionalServices: [serviceUUID]
+                acceptAllDevices: true,
+                optionalServices: []  // we'll discover all later
             });
-            bleStatusDiv.innerHTML = `🛴 Connected to ${device.name || "scooter"}`;
-            const server = await device.gatt.connect();
-            const service = await server.getPrimaryService(serviceUUID);
-            characteristic = await service.getCharacteristic(charUUID);
-            bleStatusDiv.innerHTML = `✅ BLE ready! Characteristic: ${charUUID}`;
-            connectBtn.disabled = true;
-            disconnectBtn.disabled = false;
-            sendTuneBtn.disabled = false;
-            readParamsBtn.disabled = false;
+            bleStatus.innerHTML = `✅ Selected: ${device.name || "Unnamed device"} (ID: ${device.id})`;
+            server = await device.gatt.connect();
+            bleStatus.innerHTML = `🔗 Connected to ${device.name || "device"}. Now click "READ EVERY CHARACTERISTIC"`;
             
-            // optional: add disconnect handler
+            deviceInfoLog.innerHTML = `Name: ${device.name || "?"}\nID: ${device.id}\nConnected: yes\nRSSI: (not available via Web BLE)\nManufacturer: (read from characteristics below)`;
+            
+            disconnectBtn.disabled = false;
+            readAllBtn.disabled = false;
+            exportBtn.disabled = false;
+            sendHexBtn.disabled = false;
+            bruteBtn.disabled = false;
+            captureNotifyBtn.disabled = false;
+            
             device.addEventListener('gattserverdisconnected', () => {
-                bleStatusDiv.innerHTML = "⚠️ Disconnected. Reconnect to tune.";
-                connectBtn.disabled = false;
+                bleStatus.innerHTML = "🔌 Disconnected";
                 disconnectBtn.disabled = true;
-                sendTuneBtn.disabled = true;
-                readParamsBtn.disabled = true;
-                characteristic = null;
+                readAllBtn.disabled = true;
+                exportBtn.disabled = true;
+                sendHexBtn.disabled = true;
+                bruteBtn.disabled = true;
+                captureNotifyBtn.disabled = true;
+                server = null;
+                allCharacteristics = [];
             });
         } catch(err) {
-            bleStatusDiv.innerHTML = `❌ BLE ERROR: ${err.message}`;
+            bleStatus.innerHTML = `❌ ${err.message}`;
         }
     };
 
     disconnectBtn.onclick = () => {
-        if (device && device.gatt.connected) {
-            device.gatt.disconnect();
-        }
-        bleStatusDiv.innerHTML = "🔌 Disconnected.";
-        connectBtn.disabled = false;
+        if (device && device.gatt.connected) device.gatt.disconnect();
+        bleStatus.innerHTML = "Disconnected.";
         disconnectBtn.disabled = true;
-        sendTuneBtn.disabled = true;
-        readParamsBtn.disabled = true;
-        characteristic = null;
+        readAllBtn.disabled = true;
+        sendHexBtn.disabled = true;
+        bruteBtn.disabled = true;
+        captureNotifyBtn.disabled = true;
+        server = null;
     };
 
-    sendTuneBtn.onclick = sendFullTune;
-    readParamsBtn.onclick = readParams;
-    speedSlider.oninput = updateLabels;
-    currentSlider.oninput = updateLabels;
-    fwSlider.oninput = updateLabels;
-
-    updateLabels();
-    sendTuneBtn.disabled = true;
-    readParamsBtn.disabled = true;
-
-    // extra: check for Web BLE support
-    if (!navigator.bluetooth) {
-        bleStatusDiv.innerHTML = "❌ Your browser doesn't support Web BLE. Use Chrome/Edge on Android or desktop.";
-        connectBtn.disabled = true;
-    }
+    readAllBtn.onclick = readEverything;
+    exportBtn.onclick = exportLog;
+    captureNotifyBtn.onclick = startNotifyCapture;
+    sendHexBtn.onclick = sendRawHex;
+    bruteBtn.onclick = bruteforceSpeedPatterns;
+    bruteSlider.oninput = () => { sliderVal.innerText = bruteSlider.value + "%"; };
+    
+    // initial disable
+    disconnectBtn.disabled = true;
+    readAllBtn.disabled = true;
+    exportBtn.disabled = true;
+    sendHexBtn.disabled = true;
+    bruteBtn.disabled = true;
+    captureNotifyBtn.disabled = true;
 </script>
 </body>
 </html>
